@@ -5,7 +5,7 @@ Thanks for coming to take a look at my website. Below are some projects I've wor
 
 ![Omega Comp's GUI](oc_image.png)
 
-This is the largest independent project I've worked on so far. I conducted market research to identify underserved needs in the audio processing software space, then designed, developed, and released a product to address them. I built the core algorithms and GUI using C++ and JUCE, and designed a purchase authentication service with Python and AWS. My direct involvement in both the business analysis and software engineering aspects allowed me to create a product that speaks to the needs of users while maintaining high technical standards.
+This is the largest independent project I've worked on so far: a digital audio effects tool with its own purchase authentication service. I conducted market research to identify underserved needs in the audio processing software space, then designed, developed, and released a product to address them. I built the core algorithms and GUI using C++ and JUCE, and designed the purchase authentication service with Python and AWS. My direct involvement in both the business analysis and software engineering aspects allowed me to create a product that speaks to the needs of users while maintaining high technical standards.
 
 Omega Comp is available for purchase [here](https://daybreakaudio.com/). 
 
@@ -25,7 +25,7 @@ I've also made some of the source code available [here](https://jordan-rudolph.g
 
 ![Grub Bug](gb_image.png)
 
-During my time at Cornell, I also decided to join Cornell's game development team, DGA Studios. At this position, I coordinated audio design and integration into our Unity-based game development project, Grub Bug. This included designing real-time audio processing functions in C\#, coordinating the tasks of a junior developer, and implementing spatialized audio functionality and logic across multiple objects and scripts. During this project, I also wore multiple hats, and functioned as a composer and sound designer in addition to a programmer.
+I was also the lead audio developer for Cornell's game development team, DGA Studios. At this position, I coordinated audio design and integration into our Unity-based game development project, Grub Bug. This included designing real-time audio processing functions in C\#, coordinating the tasks of a junior developer, and implementing spatialized audio functionality and logic across multiple objects and scripts. During this project, I also wore multiple hats, and functioned as a composer and sound designer in addition to a programmer.
 
 You can find a download of Grub Bug [here](https://dgacornell.itch.io/grubbug).
 

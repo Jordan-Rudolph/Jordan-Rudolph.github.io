@@ -9,7 +9,7 @@ This is the largest independent project I've worked on so far: a digital audio e
 
 Omega Comp is available for purchase [here](https://daybreakaudio.com/). 
 
-I've also made some of the source code available [here](https://jordan-rudolph.github.io/404).
+I've also made some of the source code available [here](./omega-comp-code-sample.html).
 
 ## Phytopolis
 
@@ -19,7 +19,7 @@ After being elected to the project lead role in Cornell University's Game Develo
 
 You can find a download of Phytopolis [here for Windows](https://gdiac.cs.cornell.edu/gdiac/showcase/gallery/phytopolis/Phytopolis-Win.zip) and [here for Mac](https://gdiac.cs.cornell.edu/gdiac/showcase/gallery/phytopolis/Phytopolis-Mac.zip). 
 
-I've also made some of the source code available [here](https://jordan-rudolph.github.io/404).
+I've also made some of the source code available [here](./phytopolis-code-sample.html).
 
 ## DGA Studios
 
@@ -29,7 +29,7 @@ I was also the lead audio developer for Cornell's game development team, DGA Stu
 
 You can find a download of Grub Bug [here](https://dgacornell.itch.io/grubbug).
 
-I've also made some of the source code available [here](https://jordan-rudolph.github.io/404).
+I've also made some of the source code available [here](./grub-bug-code-sample.html).
 
 ## Closing Statement
 

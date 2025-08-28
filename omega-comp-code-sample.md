@@ -237,7 +237,7 @@ def get_edpapi_token() -> str:
 
 # Spectrum Analyzer Code (C++ and JUCE framework)
 
-Header
+Fist, I have the header file:
 
 ```c++
 /*
@@ -341,7 +341,7 @@ private:
 ```
 
 
-Implementation
+Now the implementation: 
 
 ```c++
 /*

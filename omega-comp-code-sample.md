@@ -233,8 +233,221 @@ def get_edpapi_token() -> str:
     return os.environ["edp_api"]
 ```
 
+
+
 # Spectrum Analyzer Code (C++ and JUCE framework)
 
-Todo: add the code
+Header
+
+```c++
+/*
+This is a specialized spectrum analyzer I wrote using the JUCE C++ framework. It performs a fourier transform on incoming audio data
+and displays it in the frequency domain to the user. I wrote this with speed and flexibility in mind. Most notably, it can display 
+at nearly any order and maintain a stable framerate, something which many other JUCE-based spectrum analyzers I've observed fail 
+to do around order 13 due to the way that the internal sample buffer is managed. This issue is fixed here by using a circular buffer
+that maintains its state even after rendering a new frame. I've also made significant improvements to how the data is rendered, 
+moving past the basic "raw-data" approach where data is simply displayed as points on a plane to something more user-friendly. 
+*/
+
+#pragma once
+#include "JuceHeader.h"
+#include "CircularBuffer.h"
+
+//==============================================================================
+class AnalyserComponent   : public juce::Component,
+                            private juce::Timer
+{
+public:
+    AnalyserComponent();
+
+    ~AnalyserComponent() override
+    {
+    }
+
+    //Dictates how to paint this component
+    void paint (juce::Graphics& g) override;
+
+    //Redraw the spectrum after every timer callback
+    void timerCallback() override;
+
+    //Adds samples to the buffer, should be called for every sample in the incoming audio buffer in your process block
+    void pushNextSampleIntoFifo(float sample) noexcept;
+
+    //Copies the circular buffer into something JUCE can read from
+    void fillFFTData();
+
+    //Calculates what data needs to be drawn next frame
+    void drawNextFrameOfSpectrum();
+
+    //Draws the fourier transform given our current buffer states
+    void drawFrame (juce::Graphics& g);
+
+    //Function specific to my implementation of this class, where the spectrum analyzer would need to have crossover bars overlayed. 
+    void drawCrossoverLine(juce::Graphics& g, int index, int width, int height);
+
+    //Setters, kept in the header to reduce clutter in SpectrumAnalyzer.cpp
+    void setLineColour(juce::Colour color)
+	{
+		draw_color = color;
+	}
+
+    void setSampleRate(float sampleRate_)
+	{
+		sampleRate = sampleRate_;
+	}
+
+    fftOrder  = 13,              //FFT order, ie the resolution with which our spectrum is calculated
+    fftSize   = 1 << fftOrder,   //FFT size, realization of fftOrder
+    scopeSize = 1 << 11          //Draw order, ie the resolution with which the scope is rendered  
+
+private:
+    //FFT object and its windowing function to prevent spectral leakage
+    juce::dsp::FFT forwardFFT;                     
+    juce::dsp::WindowingFunction<float> window;     
+
+    //Buffers for holding fft and scope data respectively                         
+    float fftData[2 * fftSize] = {0};                  
+    float scopeData[scopeSize] = {0};                    
+    
+    //Circular buffer used for reading audio to improve stability
+    CircularBuffer<float> c_buffer = CircularBuffer<float>(fftSize);
+    int sampleCounter = 0;
+    bool nextDrawReady = false; 
+
+    juce::Colour draw_color = juce::Colours::white; //Default draw color
+    float sampleRate = 44100.0f; //Default sample rate
+
+    //Min and max frequencies to display
+    const float minFreq = 20.0f;   // 20 Hz
+    const float maxFreq = 20000.0f; // 20 kHz
+
+    //Cutoffs, instantiated with default values
+    float low_cutoff = 20.0f;
+    float low_cross = 93.f;
+    float mid_cross = 600.f;
+    float high_cross = 1400.f;
+    float high_cutoff = 20000.0f;
+    bool draw_crossovers = false;
+
+    //How much to round the drawn path by
+    float cornerRounding = 7.f;
+
+    //Decibel range to draw the spectrum over
+    const auto mindB = -100.0f;
+    const auto maxdB = 0.0f;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalyserComponent)
+};
+```
+
+
+Implementation
+
+```c++
+/*
+This is the implementation of AnalyserComponent.h. For detailed documentation and an explanation of what this class does, please see
+AnalyserComponent.h.
+*/
+
+#include "AnalyserComponent.h"
+
+AnalyserComponent::AnalyserComponent() : 
+        forwardFFT (fftOrder),
+        window (fftSize, juce::dsp::WindowingFunction<float>::hann)
+{
+    //Allow transparency
+    setOpaque (false);
+
+    //Set display rate, 30Hz is a good balance between smoothness and high performace
+    startTimerHz (30);
+
+    //Default component size, this is typically altered by the parent component
+    setSize (700, 500);
+}
+
+void AnalyserComponent::paint (juce::Graphics& g) override
+{
+    //Prepare graphics context
+    g.setOpacity (1.0f);
+    g.setColour (draw_color);
+
+    //Draw
+    drawFrame (g);
+}
+
+void AnalyserComponent::timerCallback() override
+{
+    //Calculate the next frame
+    drawNextFrameOfSpectrum();
+
+    //Draw the next frame based on our calculations
+    repaint();
+}
+
+void AnalyserComponent::pushNextSampleIntoFifo(float sample) noexcept
+{
+    //Add incoming sample to our circular buffer
+    c_buffer.push(sample);
+}
+
+void AnalyserComponent::fillFFTData() {
+    //Zeroes the old buffer to prevent unwanted sample overlapping
+    juce::zeromem(fftData, sizeof(fftData));
+    for (int i = 0; i < fftSize; i++) {
+        fftData[i] = c_buffer[i];
+    }
+}
+
+//Calculate the model for the next frame, does not render it to the display
+void AnalyserComponent::drawNextFrameOfSpectrum()
+{
+    //Calculate fourier transform with windowing function
+    fillFFTData();
+    window.multiplyWithWindowingTable(fftData, fftSize);
+    forwardFFT.performFrequencyOnlyForwardTransform(fftData);
+
+    for (int i = 0; i < scopeSize; ++i)
+    {
+        //Calculate frequency for this point using logarithmic scale
+        float freq = minFreq * std::pow(maxFreq / minFreq, (float)i / (scopeSize - 1));
+
+        //Convert frequency to FFT bin index
+        int fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(freq * fftSize / sampleRate));
+
+        //Calculate level at which to render this point
+        auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
+            - juce::Decibels::gainToDecibels((float)fftSize)),
+            mindB, maxdB, 0.0f, 1.0f);
+
+        scopeData[i] = level;
+    }
+}
+
+//Take the current model and render the next frame to the display
+void AnalyserComponent::drawFrame (juce::Graphics& g)
+{
+    //Find how much space we can draw to, works with resizable GUIs
+    auto width = getLocalBounds().getWidth();
+    auto height = getLocalBounds().getHeight();
+
+    //Draw the spectrum itself
+    juce::Path path;
+    path.startNewSubPath(0.f, juce::jmap(scopeData[0], 0.0f, 1.0f, static_cast<float>(height), 0.0f));
+
+    //Find the next point and add it to our path
+    for (int i = 1; i < scopeSize; i++)
+    {
+        float y1Raw = scopeData[i - 1];
+        float y2 = juce::jmap(scopeData[i], 0.0f, 1.0f, static_cast<float>(height), 0.0f);
+        path.lineTo(static_cast<float>(juce::jmap(i, 0, scopeSize - 1, 0, width), y2));
+    }
+    
+    //Round off corners
+    path = path.createPathWithRoundedCorners(cornerRounding);
+
+    //Draw path using current graphics context
+    g.strokePath(path, juce::PathStrokeType(1.0f));
+}
+```
 
 [back to main page](./)

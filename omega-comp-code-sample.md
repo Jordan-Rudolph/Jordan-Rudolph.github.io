@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Omega Comp Code Samples
-description: _ _
+description: ⠀
 ---
 
 This page includes the code for the spectrum analyzer and the license authentication service I built as a part of this project.

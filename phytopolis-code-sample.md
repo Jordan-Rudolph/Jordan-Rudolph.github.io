@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Phytopolis Code Samples
-description: 
+description: ⠀
 ---
 
 [back to main page](./)

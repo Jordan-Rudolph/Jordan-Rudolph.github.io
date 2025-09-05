@@ -1,3 +1,8 @@
+---
+title: Hello, I'm Jordan Rudolph
+description: Welcome to my Portfolio Page
+---
+
 
 Thanks for coming to take a look at my website. Below are some projects I've worked on that showcase my problem solving abilities, adaptability, and technical skills.
 

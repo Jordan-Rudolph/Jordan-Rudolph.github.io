@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Grub Bug Code Samples
-description: ⠀
 ---
 
 [back to main page](./)

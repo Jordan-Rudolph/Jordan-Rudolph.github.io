@@ -26,7 +26,7 @@ Le Goosery Store is a delightfully silly game about geese defending their grocer
 
 GoreCore is an upcoming fps with a retro industrial aesthetic. I wrote the following track to acompany the Blacksmith boss fight, an all out chaotic brawl that serves as the first major roadblock for the player to overcome. 
 
-### TODO: Add the audio
+<iframe width="100%" height="512" src="https://www.youtube.com/embed/qqp3aKtkScw?si=ElBej-l4aumPg-83" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 
 # RitualRX

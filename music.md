@@ -5,7 +5,7 @@ description: Welcome to my Portfolio Page
 
 # About Me
 
-My name is Jordan Rudolph, and I'm a composer and sound designer of seven years currently based in Massachusetts. I specialize in crafting distinctive musical styles tailored to each project's unique needs, creating compelling soundtracks that span diverse genres. Below is a list of some projects I've worked on, and some examples of tracks I've composed for them.
+My name is Jordan Rudolph, and I'm a composer and sound designer of seven years currently based in Massachusetts. I specialize in crafting distinctive sonic profiles tailored to each project's unique needs, creating compelling soundtracks and soundscapes that span diverse genres. Below is a list of some projects I've worked on, and some examples of the music and sounds I've made for them. 
 
 
 # Grub Bug
